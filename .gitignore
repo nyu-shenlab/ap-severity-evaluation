@@ -168,3 +168,10 @@ cython_debug/
 /logs
 /data
 /output
+
+# Inference outputs and job logs (may contain patient ids)
+output/
+logs/
+
+# Local ensemble definition with real weight paths; see configs/ensemble_template.yaml
+configs/ensemble.yaml

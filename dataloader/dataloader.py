@@ -9,6 +9,10 @@ from torch.utils.data import Dataset, DataLoader, default_collate
 from .torch_transforms import compose_transform
 from .dataloader_2D import LazyLoadDatasetCSV2D
 
+# One row per slice. ``label`` is optional; ``index``, ``RescaleIntercept`` and
+# ``RescaleSlope`` are only needed when ``absolute_image_path`` is an HDF5 volume.
+REQUIRED_COLUMNS = {'rid', 'series_number', 'absolute_image_path'}
+
 
 def validation_collate_fn(batch):
     """
@@ -56,9 +60,13 @@ def load_data(
     Returns:
         Tuple[DataLoader, Optional[DataLoader]]
     """
-    print(vis_ids)
-    test_data = pd.read_csv(datalist_path)
-    test_data = test_data[test_data['rid'].isin(vis_ids)]
+    test_data = pd.read_csv(datalist_path, low_memory=False)
+    missing = REQUIRED_COLUMNS - set(test_data.columns)
+    if missing:
+        raise ValueError(f"{datalist_path} is missing required columns: {sorted(missing)}")
+    # The models were trained and evaluated on axial slices only.
+    if 'view' in test_data.columns:
+        test_data = test_data[test_data['view'] == 'axial']
     vis_data = test_data[test_data['rid'].isin(vis_ids)] if vis_ids else None
 
     test_dataset = LazyLoadDatasetCSV2D(

@@ -11,10 +11,15 @@ import scipy, h5py
 import nibabel as nib
 
 
+# Ordinal targets [P(>=MOD), P(SEV)]; same mapping as training. 100 marks unlabeled NYU cases.
+risk_label_dict = {'MILD': [0,0], 'MOD': [1,0], 'SEV': [1,1], 'SEV_NOISE':[1,1], 100:[0,0]}
+# Placeholder for datasets without ground truth, so inference never needs labels.
+UNKNOWN_LABEL = [-1, -1]
+
 def get_label(df_rid_sn):
-    risk_label_dict = {'MILD': [0,0], 'MOD': [1,0], 'SEV': [1,1], 'SEV_NOISE':[1,1]}
-    label = torch.tensor(risk_label_dict[df_rid_sn['label'].values[0]]).float()
-    return label
+    if 'label' not in df_rid_sn.columns or pd.isna(df_rid_sn['label'].values[0]):
+        return torch.tensor(UNKNOWN_LABEL).float()
+    return torch.tensor(risk_label_dict[df_rid_sn['label'].values[0]]).float()
 
 def transform_to_hu(image, intercept, slope):
     if isinstance(intercept, np.ndarray):
@@ -162,8 +167,9 @@ class LazyLoadDatasetCSV2D(Dataset):
             df_rid_sn = df_rid.loc[df_rid.series_number == sn]
             label = get_label(df_rid_sn)
 
-            img_paths, img_idx, index, intercept, slope = self.select_slices(df_rid_sn, 
-                                                            load_index=not np.isnan(df_rid_sn['index'].iloc[0]))
+            # ``index`` is only populated for HDF5 volumes; DICOM/NIfTI rows leave it empty.
+            load_index = 'index' in df_rid_sn.columns and not pd.isna(df_rid_sn['index'].iloc[0])
+            img_paths, img_idx, index, intercept, slope = self.select_slices(df_rid_sn, load_index=load_index)
             images = load_images(img_paths,
                                 transform=self.transform,
                                 index=index, 

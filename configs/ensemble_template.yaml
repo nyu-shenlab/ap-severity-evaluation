@@ -1,0 +1,21 @@
+# Ensemble definition for evaluation.py --models_file.
+# Copy to configs/ensemble.yaml (git-ignored) and fill in your paths.
+# Each model_dir must contain the training config.yaml and the named checkpoint.
+# weights_root is prepended to every model_dir; override it with --weights_root.
+weights_root: /path/to/weights
+
+# Severe-vs-rest models: P(severe) is min-max scaled per model over the cohort, then averaged.
+severe:
+  - {model_dir: severe_model_1, weight: best_val_auc_S.ckpt}
+  - {model_dir: severe_model_2, weight: best_val_auc_S.ckpt}
+  - {model_dir: severe_model_3, weight: best_val_auc_S.ckpt}
+  - {model_dir: severe_model_4, weight: best_val_auc_S.ckpt}
+  - {model_dir: severe_model_5, weight: best_val_auc_S.ckpt}
+
+# Mild-vs-rest models: P(mild) is averaged as is.
+mild:
+  - {model_dir: mild_model_1, weight: best_val_auc_M.ckpt}
+  - {model_dir: mild_model_2, weight: best_val_auc_M.ckpt}
+  - {model_dir: mild_model_3, weight: best_val_auc_M.ckpt}
+  - {model_dir: mild_model_4, weight: best_val_auc_M.ckpt}
+  - {model_dir: mild_model_5, weight: best_val_auc_M.ckpt}

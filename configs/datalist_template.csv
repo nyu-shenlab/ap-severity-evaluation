@@ -1,0 +1,11 @@
+rid,series_number,absolute_image_path,view,label,index,RescaleIntercept,RescaleSlope
+1001,3,/path/to/data/1001/series3/slice_0001.dcm,axial,MILD,,,
+1001,3,/path/to/data/1001/series3/slice_0002.dcm,axial,MILD,,,
+1001,3,/path/to/data/1001/series3/slice_0003.dcm,axial,MILD,,,
+1001,5,/path/to/data/1001/series5/slice_0001.dcm,axial,MILD,,,
+1001,5,/path/to/data/1001/series5/slice_0002.dcm,axial,MILD,,,
+1002,2,/path/to/data/1002/series2/slice_0001.dcm,axial,,,,
+1002,2,/path/to/data/1002/series2/slice_0002.dcm,axial,,,,
+1003,4,/path/to/data/1003/series4.hdf5,axial,SEV,0,-1024,1
+1003,4,/path/to/data/1003/series4.hdf5,axial,SEV,1,-1024,1
+1003,4,/path/to/data/1003/series4.hdf5,axial,SEV,2,-1024,1
